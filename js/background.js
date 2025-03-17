@@ -79,7 +79,6 @@ let altPromptsVisable = false;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'alt_prompts_visable') {
         altPromptsVisable = true;
-        console.log("altPromptsVisable", altPromptsVisable);    
     }
 });
 
@@ -107,9 +106,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         let currentUrl = new URL(tab.url).href; // Fullständig URL jämförelse
 
             if ((history.length > 0 && new URL(history[history.length - 1]).href === currentUrl)) {
-                console.log(history);
-                console.log(new URL(history[history.length - 1]).href);
-                console.log("current",currentUrl);
+                // console.log(history);
+                // console.log(new URL(history[history.length - 1]).href);
+                // console.log("current",currentUrl);
 
                 if(!ctrlRPressed && !altPromptsVisable){
                     // if(!ctrlRPressed ){
@@ -351,7 +350,7 @@ function fetchStoredDataAsJson() {
 // Funktion för att skicka data till PHP-filen
 
 function sendDataToServer(data) {
-    
+        console.log(data); 
     fetch('https://melab.lnu.se/~mm224zp/shortcut_learner/database.php', {
         method: 'POST',
         headers: {
@@ -368,7 +367,6 @@ function sendDataToServer(data) {
         if (result.status === "success") {
             
             removeLocalData(data);
-            // Exempel: skicka event till en popup eller UI
         } 
     })
     .catch(error => console.error('Fetch error:', error));
