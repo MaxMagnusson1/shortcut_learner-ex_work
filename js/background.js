@@ -79,6 +79,7 @@ let altPromptsVisable = false;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'alt_prompts_visable') {
         altPromptsVisable = true;
+        
     }
 });
 
@@ -351,7 +352,7 @@ function fetchStoredDataAsJson() {
 // Funktion för att skicka data till PHP-filen
 
 function sendDataToServer(data) {
-    
+        console.log(data); 
     fetch('https://melab.lnu.se/~mm224zp/shortcut_learner/database.php', {
         method: 'POST',
         headers: {
@@ -368,7 +369,6 @@ function sendDataToServer(data) {
         if (result.status === "success") {
             
             removeLocalData(data);
-            // Exempel: skicka event till en popup eller UI
         } 
     })
     .catch(error => console.error('Fetch error:', error));

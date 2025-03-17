@@ -13,8 +13,6 @@ $password = "GG7waK5g";
 $dbname = "mm224zp_ex";
 $port = 3306; 
 
-
-
 $conn = new mysqli($servername, $username, $password, $dbname, $port);
 
 if ($conn->connect_error) {
