@@ -101,7 +101,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             tabHistory[tabId] = [];
         }
 
-        // Hämta historik för just denna flik
+        // Hämta historik för just denna fli
         let history = tabHistory[tabId];
         let currentUrl = new URL(tab.url).href; // Fullständig URL jämförelse
 
