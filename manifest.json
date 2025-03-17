@@ -1,0 +1,72 @@
+{
+  "manifest_version": 3,
+  "name": "Shortcut-learner",
+  "version": "1.0",
+  "description": "Shortcut leaner is University project. This extension is developed to both learn users shortcuts and gather data about the shortcuts users use and how effeicent the tools is. The data gatherd is anonymous. By development reasons this extension will not work at following webbsites, docs.google.com, youtube.com/shorts or tiktok.com   Its developed by Max Magnusson. ",
+  "permissions": [ 
+    "activeTab",
+    "tabs", 
+    "scripting", 
+    "webNavigation", 
+    "bookmarks",
+    "downloads", 
+    "scripting", 
+    "storage",
+    "contextMenus", 
+    "alarms"
+  ],
+
+
+
+  "background": {
+    "service_worker": "js/background.js", 
+    "type": "module"
+  },
+
+  "icons": {
+    "16": "img/s-icon.png",
+    "48": "img/s-icon.png",
+    "128": "img/s-icon.png"
+  },
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "img/s-icon.png",
+    "default_title": "Klicka för undersöka tillägget"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"], 
+"exclude_matches": [
+    "*://www.youtube.com/shorts/*",
+    "*://tiktok.com/*",
+    "*://www.tiktok.com/*",
+    "*://login.microsoftonline.com/*",
+    "*://klubbhuset.com/sv-se/HBH/?page=1&srsltid=AfmBOorbRzFXHWQ61dZF29_BcSBXzDZqdVZSb4DOMwbvzVn2U6PJC2Uk/*"
+],
+      "js": [
+        "js/shortcommand_div.js", 
+        "js/content.js"
+
+      ],
+      "css": ["style.css"], 
+      "run_at": "document_start"
+    }
+  ],
+
+  "host_permissions": ["http://*/*", "https://*/*"],
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "js/shortcommand_div.js",
+        "js/reloadHandler.js",
+        "js/urlHandler.js",
+        "js/tabListener.js",
+        "js/content.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

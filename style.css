@@ -1,0 +1,108 @@
+#shortcommandDiv {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 9999;
+    width: fit-content;
+    height: fit-content;
+    transition: transform 3s ease-in-out;
+}
+
+#shortcommandDivContainer{
+    position: fixed;
+    bottom: 40px; 
+    right: 10px; 
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: all 0.3s ease-in-out;
+    font-size: 20px;
+    font-family: bold;
+}
+
+#shortcommandDivContainer.move-up {
+    transform: translateY(-50px); /* Flytta 50 pixlar uppåt */
+}
+
+
+
+.shortcommandDiv {
+    background: black;
+    background-size: 200% 100%;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    opacity: 1;
+    transition: opacity 0.5s ease, transform 3s ease-in-out;
+    text-align: right;
+    width: fit-content;
+    /* animation: shimmer 1.5s 1; */
+    animation-fill-mode: none; /* Återställ bakgrunden efter animationen */
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#shortcutLink{
+    align-items: center;
+    background-color: initial;
+    background-image: linear-gradient(#464d55, #25292e);
+    border-radius: 8px;
+    border-width: 0;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .1),0 3px 6px rgba(0, 0, 0, .05);
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    height: 46px;
+    justify-content: center;
+    line-height: 1;
+    margin: 0;
+    outline: none;
+    overflow: hidden;
+    padding: 0 10px;
+    text-align: center;
+    text-decoration: none;
+    /* transform: translate3d(0, 0, 0); */
+    /* transition: all 150ms; */
+    vertical-align: baseline;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    /* touch-action: manipulation; */
+  }
+  
+  #shortcutLink:hover {
+    box-shadow: rgba(0, 1, 0, .2) 0 2px 8px;
+    opacity: .85;
+  }
+ 
+  #countdownTimer{
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:8px; 
+  }
+
+
+  #reminderPrompt{
+    background: black;
+    background-size: 200% 100%;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    opacity: 1;
+    text-align: left;
+    width: fit-content;
+    cursor: pointer;
+  
+  }
+

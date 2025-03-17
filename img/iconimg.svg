@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 55.02">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-1, .cls-2 {
+        font-family: ColonnaMT, 'Colonna MT';
+      }
+
+      .cls-2, .cls-3, .cls-4 {
+        font-size: 6px;
+      }
+
+      .cls-5 {
+        font-size: 49.91px;
+      }
+
+      .cls-3 {
+        letter-spacing: -.02em;
+      }
+
+      .cls-6 {
+        fill: blue;
+        stroke-width: 0px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <rect class="cls-6" y="2.02" width="48" height="48"/>
+      <text class="cls-1" transform="translate(4.06 37.96)"><tspan class="cls-5" x="0" y="0">S</tspan><tspan class="cls-4" x="22.35" y="0">ho</tspan><tspan class="cls-3" x="28.54" y="0">r</tspan><tspan class="cls-4" x="30.76" y="0">tcut</tspan></text>
+      <text class="cls-2" transform="translate(27.89 42)"><tspan x="0" y="0">Learner</tspan></text>
+    </g>
+  </g>
+</svg>
