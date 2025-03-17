@@ -79,7 +79,6 @@ let altPromptsVisable = false;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'alt_prompts_visable') {
         altPromptsVisable = true;
-        console.log("altPromptsVisable", altPromptsVisable);    
     }
 });
 
@@ -91,13 +90,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 
-
+let isAlreadyPrompted = false; // Kontrollerar om meddelandet redan har visats
 // Lyssna på flikuppdateringar
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     //körs endast närfliken är klar laddad 
-    if (changeInfo.status === "complete") {
-        // console.log(details.transitionType );
-        // Om fliken inte har någon historik, skapa en ny array för den
+    if (changeInfo.status === "complete" && !isAlreadyPrompted) {
+        isAlreadyPrompted = true;
         if (!tabHistory[tabId]) {
             tabHistory[tabId] = [];
         }
@@ -107,9 +105,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         let currentUrl = new URL(tab.url).href; // Fullständig URL jämförelse
 
             if ((history.length > 0 && new URL(history[history.length - 1]).href === currentUrl)) {
-                console.log(history);
-                console.log(new URL(history[history.length - 1]).href);
-                console.log("current",currentUrl);
+             
 
                 if(!ctrlRPressed && !altPromptsVisable){
                     // if(!ctrlRPressed ){
@@ -138,6 +134,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             history.shift();
         }
     }
+
+    setTimeout(() => {
+        isAlreadyPrompted = false;    
+    } , 1000);
 });
 
 // Ta bort flikens historik när fliken stängs
