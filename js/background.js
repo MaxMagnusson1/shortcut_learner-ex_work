@@ -1,9 +1,9 @@
-let flagForWebbsiteForAlt = false; // Flytta utanför och gör den global
-let flagForWebbsiteForCTRLR = false; // Flytta utanför och gör den global
+let flagForWebbsiteForAlt = false;
+let flagForWebbsiteForCTRLR = false; 
 /**
  * Lyssnar på när en ny flik skapas och omdirigerar till Google OCH skriver ut CTRL + T
  */
-const tabsToRedirect = new Set(); // Håller koll på flikar som eventuellt ska omdirigeras
+const tabsToRedirect = new Set(); 
 
 chrome.tabs.onCreated.addListener((tab) => {
 
@@ -15,7 +15,7 @@ chrome.tabs.onCreated.addListener((tab) => {
     }
 });
 
-// Lyssna på när en flik uppdateras (URL ändras eller laddas klart)
+// Lyssna på när en flik uppdateras (URL ändras eller laddas klart) och fiall det är en ny flik som ska omdirigeras till google.com
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tabsToRedirect.has(tabId)) {
         if (changeInfo.url && !changeInfo.url.startsWith("chrome://newtab")) {
@@ -40,11 +40,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 /**
- * Kod för lyssna efter om användaren laddar om sidan CTRL R
- * Lyssnar efter om det uppdateras, när statusen är complete och om det är samma tab url så skrivs ctrl r ut. 
- * Om url inte är samma skrivs alt + ← / alt + → ut men kan även triggas när man byter flik
+ * Lyssnar på front end ifall ctrl r eller alt arrow har tryckts och sätter flaggor till true isåfal. 
  */
-// Spara tidigare URL för varje flik
 
 let ctrlRPressed = false;
 let altArrowPressed = false;
@@ -58,23 +55,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-let previousUrls = {}; // Sparar senaste URL per flik
-
-// Håller koll på historiken för varje flik
+/**
+ * Variabler för att hålla koll på url:er 
+ */
+let previousUrls = {};
 let tabHistory = {};
+let lastLoadTime = {}; 
 
-let lastLoadTime = {}; // Sparar senaste laddningstiden per flik
-
-
-// Lyssna på navigeringstyp (F5, länk, knapp)
+/**
+ * Kontrollerar vilken typ av uppdatering som har skett, om det är en länk, form submit eller manual subframe sätts ctrlRPressed till true 
+ * och prompten kommer inte att skrivas ut 
+ */
 chrome.webNavigation.onCommitted.addListener((details) => {
 
-    // console.log(details.transitionType);
     if (details.transitionType === "link"||  details.transitionType === "form_submit" || details.transitionType === "manual_subframe") {
         ctrlRPressed = true;
     } 
 });
 
+
+/**
+ * Kontrollerar ifall alt prompten är synlig, får en ping från frontend, sätter flaggan till true eller false, ctrl r kommer isåfall
+ * inte att skrivas ut 
+ */
 let altPromptsVisable = false;  
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'alt_prompts_visable') {
@@ -95,7 +98,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     //körs endast närfliken är klar laddad 
     if (changeInfo.status === "complete") {
-        // console.log(details.transitionType );
+
         // Om fliken inte har någon historik, skapa en ny array för den
         if (!tabHistory[tabId]) {
             tabHistory[tabId] = [];
@@ -106,26 +109,22 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         let currentUrl = new URL(tab.url).href; // Fullständig URL jämförelse
 
             if ((history.length > 0 && new URL(history[history.length - 1]).href === currentUrl)) {
-                // console.log(history);
-                // console.log(new URL(history[history.length - 1]).href);
-                // console.log("current",currentUrl);
-
+            
                 if(!ctrlRPressed && !altPromptsVisable){
-                    // if(!ctrlRPressed ){
-
-                chrome.tabs.sendMessage(tabId, {
-                action: "show_message",
-                text: "CTRL + R"
-            }, () => {
-                if (chrome.runtime.lastError) {}
-            });
-            return; 
-                } else {  
-                    ctrlRPressed = false;
-                    // console.log("mega");
+               
+                        chrome.tabs.sendMessage(tabId, {
+                        action: "show_message",
+                        text: "CTRL + R"
+                    }, () => {
+                        if (chrome.runtime.lastError) {}
+                    });
                     return; 
-                }
-            }
+                        } else {  
+                            ctrlRPressed = false;
+                            // console.log("mega");
+                            return; 
+                        }
+                    }
 
         // Om den nya URL:en är samma som den senaste, betyder det att sidan laddades om (CTRL + R)
       
@@ -163,17 +162,8 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     activeTabId = activeInfo.tabId;
 });
 
-/** 
- * Lyssnar på när en flik stängs och skriver ut CTRL + W  
- * Finns event som lysnar på ifall tabs är borttagna, kontrollerar ifall det är tabben man är på  
- */
-
-let ctrl_pressed = false;   
-
-
-
 /**
- * Lyssna efter att användaren bokmärker en sida 
+ * Lyssna efter att användaren bokmärker en sida via kortkommando, tar emot message från content script
  */
 
 let ctrlDPressed = false;
@@ -184,12 +174,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-let ctrlLPressed = false;
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'ctrl_l_pressed') {
-        ctrlLPressed = true;
-    }
-});
+/**
+ * Kontroll ifall content script har skickat ping att användaren har bokmärk något, kontrollerar ctrlDPressed flaggan.
+ */
+
 
 chrome.bookmarks.onCreated.addListener((id, bookmark) => {
 
@@ -208,7 +196,7 @@ chrome.bookmarks.onCreated.addListener((id, bookmark) => {
   
 
 /**
- * Hanterar när användaren laddar ner något och skriver ut CTRL + S
+ * Kontrollerar ifall content script har skickat ett meddelande om användaren har använt ctrl s kortkommando.
  */
 let ctrlSPressed = false;
 
@@ -218,6 +206,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 }
 );
+
+/**
+ * Funtion som lyssnar på frontend ifall ctrl + s har aktiverats. Kontrolelrar ifall flaggan är false. SKickar det till content script 
+ */
 
 chrome.downloads.onCreated.addListener((downloadItem) => {
     if (!ctrlSPressed) {
@@ -236,21 +228,18 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
 
 
 /**
- * Lyssnar efter om användaren söker eller navigerar till en webbplats
+ * Lyssnar efter om användaren söker eller navigerar till en webbplats. Om dnen hamnar på new tab så omrediergerar vi den till google.com
  */
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.url) {
         const url = new URL(changeInfo.url);
 
-        // Kontrollera om det är en sökning eller en direkt navigering
         if ((url.hostname.includes("google.com") && url.pathname.includes("/search")) ||
             (url.hostname.includes("bing.com") && url.pathname.includes("/search")) ||
             (url.hostname.includes("duckduckgo.com") && url.pathname.includes("/")) ||
             (url.hostname.includes("yahoo.com") && url.pathname.includes("/search"))) {
             
-            // Det är en sökning
         } else {
-            // Det är en direkt navigering till en webbplats
             flagForWebbsiteForCTRLR = true;
             flagForWebbsiteForAlt = true;
         }
@@ -259,7 +248,9 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
 );
 
 
-// Lyssnar på meddelanden för GUI-användning
+/*
+* Sparar gui kommands lokalt tillsammans med en hashad url där de används 
+*/
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "save_action_for_GUI") {
         saveShortcutToStorage(message.shortcut, "gui_actions", message.hasedUrl); 
@@ -270,7 +261,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Låter Chrome vänta på asynkron lagring
 });
 
-// Lyssnar på meddelanden för tangentbordsgenvägar
+/**
+ * Lyssnar på kortkommandon och lagrar det lokalt tillsammans med en hashad url där de används
+ */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "save_shortcut_from_keyboard") {
 
@@ -314,9 +307,9 @@ function saveShortcutToStorage(shortcut, storageKey, hasedUrl) {
 }
 
 
-//**
-//DATABASHANDLER
-//  */
+/**
+ * Funtioner för att hämta data lokalt, bearbeta datan, sätta in den i serven, ta bort den lokala datan.
+ */ 
 
 
 // Funktion för att hämta gui_actions och keyboard_shortcuts från Chrome Storage och returnera som JSON
@@ -347,10 +340,11 @@ function fetchStoredDataAsJson() {
     });
 }
 
-// Funktion för att skicka data till PHP-filen
+/**
+ * Funktion för att skicka data till servern, skickar den lokala datan som json
+ */
 
 function sendDataToServer(data) {
-        console.log(data); 
     fetch('https://melab.lnu.se/~mm224zp/shortcut_learner/database.php', {
         method: 'POST',
         headers: {
@@ -363,7 +357,7 @@ function sendDataToServer(data) {
         return response.json().then(result => ({ result }));
     })
     .then(({ result }) => {
-        // Skicka en ping till frontend beroende på status    
+        // Skicka en ping till frontend beroende på status, ifall det är sucsess är insättingen lyckad och datan som sattes in tas bort lokalt  
         if (result.status === "success") {
             
             removeLocalData(data);
@@ -423,8 +417,9 @@ function logAndSendStoredData() {
     });
 }
 
-// Anropa logAndSendStoredData var 10:e sekund
-// Kör logAndSendStoredData endast om det finns något att skicka
+/**
+ * Data försöker sparas i servern direkt vid uppstart samt var 20 sekund
+ */
 setInterval(() => {
     fetchStoredDataAsJson().then(result => {
         if (!result.isEmpty) {
@@ -432,8 +427,7 @@ setInterval(() => {
         } else {
         }
     });
-}, 20000); // Kör var 100 sekunder
-// Exempel: Anropa funktionen direkt vid start
+}, 20000); 
  logAndSendStoredData();
 
   // Dateobj för start- och sluttid för att visa knappen samt prompts
@@ -441,12 +435,10 @@ let startTime = new Date("2025-03-11T08:00:00").getTime();
 let endTime = new Date("2065-03-12T12:00:00").getTime();
 
 function checkTime() {
+
     let now = new Date().getTime();
     let isVisible = now >= startTime && now <= endTime;
-
     chrome.storage.local.set({ isPromptsVisible: isVisible });
-
-    // console.log("isPromptsVisible set to:", isVisible);
 }
 
 // Kontrollera tiden direkt vid start och sedan varje sekund
@@ -454,21 +446,7 @@ checkTime();
 setInterval(checkTime, 1000);
 /** 
 
- * ifall muskordinater inte är undefined ska inte alt ← / alt → skrivas ut
- * CTRL R skrivs ut 4 gånger typ
- * Se till så man inte blir promtar ifall man använder kortkommando - funkar till mkt men två som inte fungerar
- * ctrl w,  och ctrl tab fungerar inte för den övre
- * markering av text saknar funktionalitet
- * inspectorn har ignet atm för kortkommandon vs gui
  * 
- * 
- *  CTRL W + CTRL T fungerar halvt typ när de gäller shortcutsen
- * Vet inte hur man kan föra data över att markera text 
- * stängt av det för google docs för det skapar mycket problem
- * CTRL N 
- * 
- * 
- * alt knapparna visas inte 
  * 
  * Dessa kommer kunna mätas utan problem med säkerhet 
  * CTRL + R:
@@ -497,18 +475,8 @@ setInterval(checkTime, 1000);
  *vad behöver fortsätta att kolals på
 *
 * om insättningarna i databasen stämmer som det ska 
-* ctrl shift i - behöver nog tas bort 
-* ifall man kan kontrollera ifall
 
 UNDER TESTNING: 
-ALT PILARNA 
  */
-  
-//avsloyt söksträng ska vara samma vid ctrl r 
-
-//fixa chrome storage med visible flag 
-//kontrollera ctrl r med exakta url:er
- //fixat ish
 
 //shortcut för dubbelklick loggas inte
-// alt pilarna är fel i fullshprtcutlearner

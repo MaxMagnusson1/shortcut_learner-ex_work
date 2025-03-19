@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
      */
     let startTime = new Date("2025-03-11T08:00:00").getTime(); 
     let endTime = new Date("2026-03-12T12:00:00").getTime(); 
-    console.log(startTime, endTime);
 
     /**
      * Timer element som räknar ner tiden till att knappen visas 

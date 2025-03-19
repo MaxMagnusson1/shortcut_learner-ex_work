@@ -24,7 +24,7 @@ class ShortcommandDiv {
     this.mouseY;
 
     document.addEventListener("DOMContentLoaded", () => {
-      this.createDivContainer(); // Skapa container efter att DOM är redo
+      this.createDivContainer(); 
       this.setupSelectAllListener();
       this.setupEventListenersForShortcuts();
       
@@ -37,6 +37,9 @@ class ShortcommandDiv {
 
   }
 
+  /**
+   * Funktion för att skapa en container som håller promptsen
+   */
   
   createDivContainer() {
     if (!this.divContainer) {
@@ -49,6 +52,9 @@ class ShortcommandDiv {
     }
   }
 
+  /**
+   * Metod för att göra promptsen klickbara och leder dem till en extern sida
+   */
   makePromptsClickble() {
       if (this.divContainer) {
         this.divContainer.addEventListener("click", () => {
@@ -57,8 +63,10 @@ class ShortcommandDiv {
         ); 
      };
   }
+
   /**
-   * Sätter text i div elementet och gör det synligt
+   * Sätter text i div elementet och gör det synligt samt tar bort det efter 5 sekunder.
+   * Har en timer för alt pilarna och skickar en ping till background.js för att visa att alt pilarna är ej synliga längre och ctrl r kan få promptas
    */
 
 setTextInDiv(text) {
@@ -66,11 +74,8 @@ setTextInDiv(text) {
   newDiv.className = "shortcommandDiv";
   newDiv.classList.add("move-up");
   newDiv.textContent = text;
- 
-  // Lägg till den nya div:en i containern
   this.divContainer.appendChild(newDiv);
 
-  // Ta bort div:en efter 5 sekunder
   setTimeout(() => {
     newDiv.style.opacity = "0"; 
     setTimeout(() => {
@@ -98,7 +103,8 @@ setTextInDiv(text) {
   }
 
   /**
-   * Lyssnar efter ifall någon markerar text på sidan
+   * Funktion som lyssnar efter olika typer av textmarkering på sidan. 
+   * Kontrollerar ifall man drar över text, dubbelklickar eller trippelklickar på texten. Bortser från ctrl a 
    */
 
   setupSelectAllListener() {
@@ -177,7 +183,8 @@ setTextInDiv(text) {
 }
 
   /**
-   * Controllerar ifall någon är påväg ut att skriva ut något 
+   * Metod för att kontrollera om någon har skrivit ut något. 
+   * Kontrollerar isCtrlPPressed för att inte skriva ut det när man använder kortkommando. 
    */
   setupEventListeners() {
     window.addEventListener("beforeprint", () => {
@@ -196,7 +203,8 @@ setTextInDiv(text) {
   }
 
 /**
- * Lyssnar efter ifall någon kopierar text från en sida
+ *  Metod för att lyssna iflal någon kopierar något på en sida 
+ * Kontrollerar isCtrlCPressed för att inte skriva ut det när man använder kortkommando.
  */
   setupCopyListener() {
     document.addEventListener("copy", (event) => {
@@ -214,15 +222,17 @@ setTextInDiv(text) {
   }
 
   /**
-   * Lyssnar efter ifall någon klistrar in text på en sida
+   * Funktion för att lyssna ifall något klistras in på sidan
+   * Kontrollerar isCtrlVPressed för att inte skriva ut det när man använder kortkommando.
    */
   setupPasteListener() {
     document.addEventListener("paste", (event) => {
 
       if(!this.isCtrlVPressed){
-        this.shortcommandForJson = "CTRL/CMD + V";
-      this.controlIfToPromt(`${this.platformCommand} + V - Klistra in`);
-      this.sendToStorage(this.shortcommandForJson);
+
+          this.shortcommandForJson = "CTRL/CMD + V";
+          this.controlIfToPromt(`${this.platformCommand} + V - Klistra in`);
+          this.sendToStorage(this.shortcommandForJson);
       }
        else {
         this.isCtrlVPressed = false;
@@ -232,7 +242,8 @@ setTextInDiv(text) {
   } 
 
   /**
-   * Eventlyssnare för om någon cuttar något från textinmatning inte adressfältet dock
+   * Metod för att lyssna efter om något klipps ut på sidan
+   * Kontrollerar isCtrlXPressed för att inte skriva ut det när man använder kortkommando. 
    */
 
   setupCutListener() {
@@ -248,7 +259,7 @@ setTextInDiv(text) {
 }
 
 /**
- * Switch case som hanterar olika meddelanden som skickas från background.js
+ * Metod för att lyssna efter om sidan uppdateras, kallar isåfall på handleUrlCHange och skickar med den nuvarande url:n
  */
 
 setupPopStateListener() {
@@ -259,7 +270,7 @@ setupPopStateListener() {
 }
 
 /**
- * Override history methods to detect URL changes
+ * Hjälpmetod för att kontrollera tidigare url:er och kuna hantera bakåt och framåt knappar
  */
 overrideHistoryMethods() {
   const originalPushState = history.pushState;
@@ -277,7 +288,7 @@ history.replaceState = function (state, title, url) {
 }
 
 /**
-* Hanterar URL-ändringar
+* Metod för att hantera url:förändringar, ifall det sker korrekt så kommer alt pilarna att promptas
 */
 
 handleUrlChange() {
@@ -311,7 +322,9 @@ handleUrlChange() {
   }
 }
 
-// ...existing code...
+/**
+ * Samma sak som metoden över men hanterar det annorlunda då alt pilarna kan vara problematiska att hantera 
+ */
 
 ctrlAltEvent() {
 let shortcommand = "";
@@ -346,7 +359,10 @@ window.addEventListener("pageshow", (event) => {
 });
 }
 
-
+/**
+ * Metod som lyssnar efter pings från bakgrundscriptet. Får infomration om vilken prompt som ska promptas. Jämför resultatet med en swiitch. 
+ * Sätter därefter korrekt värde till korrekt kortkommando och skickar det till metoder som lagrar datan samt promptar det. 
+ */
 
   setupMessageListener() {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -396,7 +412,10 @@ window.addEventListener("pageshow", (event) => {
   }
 
   /**
-   * Funktion för att lyssna efter kortkommandon från tangentbordet, använder keydown, lyssnar efter ctrl och sen matchar det med en annan tangent 
+   * Funktion för att lyssna efter kortkommandon från tangentbordet, använder keydown, lyssnar efter ctrl och sen matchar det med en annan tangent. 
+   * Ifall det upptäcks så lagras kortkomamdnot, en ping till bakground.js skickas att detta kortkommando användas, resulterar i att eventet inte promptas. 
+   * Kan även sättas som en variabel ifall eventet upptäckts i content script.
+   * Endel kortkommandon är nya och mäts inte via gui då den funktionaliteten inte finns
    */
   setupEventListenersForShortcuts() {
     let keysPressed = {}; 
@@ -407,46 +426,45 @@ window.addEventListener("pageshow", (event) => {
         let ctrlOrCmd = isMac ? event.metaKey : event.ctrlKey; 
         let shortcommandForJson = "";
 
-        // Hantera vanliga Ctrl/Cmd-kortkommandon (utan Shift)
         if (ctrlOrCmd && !event.shiftKey) {
       
             switch (event.key.toLowerCase()) {
 
                 case "r":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + R"; //funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + R"; 
                     chrome.runtime.sendMessage({
                       action: 'ctrl_r_pressed'
                   });
                     break;
                 case "s":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + S";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + S";
                     chrome.runtime.sendMessage({
                       action: 'ctrl_s_pressed'
                   });
                     break;
                 case "d":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + D";//funkar 
+                    shortcommandForJson = "Shortcut: CTRL/CMD + D"; 
                     chrome.runtime.sendMessage({
                       action: 'ctrl_d_pressed'
                   });
                     this.isCtrlDPressed = true;
                     break;
                 case "p":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + P";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + P";
                     this.isCtrlPPressed = true;
                     break;
             
                 case "c":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + C";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + C";
                     this.isCtrlCPressed = true;
                     break;
                 case "v":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + V";//funkar 
+                    shortcommandForJson = "Shortcut: CTRL/CMD + V"; 
                     this.isCtrlVPressed = true;
                     break;
 
                 case "x":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + X";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + X";
                     this.isCtrlXPressed = true;
                     break;
 
@@ -455,32 +473,29 @@ window.addEventListener("pageshow", (event) => {
                  */
                
                 case "f":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + F";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + F";
                     break;
                 case "z":
         
-                    shortcommandForJson = "Shortcut: CTRL/CMD + Z";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + Z";
                     break;
                 case "y":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + Y";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + Y";
                     break;
                 case "a":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + A";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + A";
                     break;
                 case "+":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + +";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + +";
                     break;
                 case "-":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + -";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + -";
                     break;
                 case "0":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + 0";//funkar
+                    shortcommandForJson = "Shortcut: CTRL/CMD + 0";
                     break;
                 case "l":
-                    shortcommandForJson = "Shortcut: CTRL/CMD + L";//funkar
-
-                  
-                  
+                    shortcommandForJson = "Shortcut: CTRL/CMD + L";
                     break;
             }
         }
@@ -488,12 +503,12 @@ window.addEventListener("pageshow", (event) => {
         if (event.altKey || event.metaKey){
           switch (event.key.toLowerCase()) {
             case "arrowleft":
-                shortcommandForJson = "Shortcut: ALT + ←"; //funkar
+                shortcommandForJson = "Shortcut: ALT + ←"; 
                 this.altArrowPressed = true;
                 break;
 
             case "arrowright":
-                shortcommandForJson = "Shortcut: ALT + →";//funkar
+                shortcommandForJson = "Shortcut: ALT + →";
                 this.altArrowPressed = true;
                 break;
           }
@@ -502,24 +517,21 @@ window.addEventListener("pageshow", (event) => {
        
 
         if (ctrlOrCmd && event.shiftKey && event.key.toLowerCase() === "i") {
-          this.isCtrlShiftPressed = true; // Sätt flaggan
-          shortcommandForJson = "Shortcut: CTRL/CMD + SHIFT + I"; //funkar
+          this.isCtrlShiftPressed = true; 
+          shortcommandForJson = "Shortcut: CTRL/CMD + SHIFT + I"; 
       }      
-
-        // Skicka data om ett kortkommando upptäcktes
         if (shortcommandForJson) {
             this.sendToStorageForKeyboard(shortcommandForJson);
         }
     });
 
-    // Ta bort tangenter från `keysPressed` när de släpps
     document.addEventListener("keyup", (event) => {
         delete keysPressed[event.key];
     });
 }
 
 /**
- * Funktion som kontrollerar ifall en prompt ska visas eller inte, kollar en boolean i chrome storage
+ * Funktion som kontrollerar ifall en prompt ska visas eller inte, kollar en boolean i chrome storage som är baserat på datum. 
  */
 controlIfToPromt(text) {
 
@@ -532,13 +544,14 @@ controlIfToPromt(text) {
   })
 }
 
-// Skickar GUI data till background.js
+/**
+ * Funtion för att lagra data kring gui kommands, skickar till bakground.js som lagrar datan i chrome storage
+ * Kontrolelrar den aktuella url:n och hashar den för att kunna lagra den i chrome storage
+ */
   sendToStorage(shortcommandForJson) {
-    // Get the current URL
 
-// You can also use other properties of window.location
   const hostname = window.location.hostname;
-  var hashedUrlString = window.btoa(hostname); // Encode the hostname to base64
+  var hashedUrlString = window.btoa(hostname); 
 
      chrome.runtime.sendMessage({
       action: "save_action_for_GUI",
@@ -548,10 +561,14 @@ controlIfToPromt(text) {
     });
   }
 
-//skickar keyboardshortdata till background.js
+/**
+ * Funktion som lagrar kortkommandon från tangentbordet, skickar till bakground.js som lagrar datan i chrome storage. 
+ * Kontrollerar akutell url och hashar den för att kunna lagra den i chrome storage
+ */
+
   sendToStorageForKeyboard(shortcommandForJson) {
     const hostname = window.location.hostname;
-    var hashedUrlString = window.btoa(hostname); // Encode the hostname to base64
+    var hashedUrlString = window.btoa(hostname); 
 
      chrome.runtime.sendMessage({
       action: "save_shortcut_from_keyboard",
@@ -562,13 +579,16 @@ controlIfToPromt(text) {
     });
   }
 
+/**
+ * Metod som promptar användaren en gång om dagen i split 2, skickar prompt som påminner om att det finns andra kortkommandon. 
+ */
+
   remindUserOnceAday(text) {
-    const today = new Date().toISOString().split('T')[0]; // Få dagens datum i formatet YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0]; 
     chrome.storage.local.get("lastPromptDate", (data) => {
       const lastPromptDate = data.lastPromptDate;
       var textString = "Under denna period får du kortkommando prompts. <br>Utforska fler kortkommandon i tillägget eller klicka på en prompt!";
       if (lastPromptDate !== today) {
-        // Om ingen prompt har visats idag, visa prompten och uppdatera lastPromptDate
         this.createDivContainer();
         this.setTextInReminderPrompts(textString);
         chrome.storage.local.set({ lastPromptDate: today });
@@ -576,12 +596,13 @@ controlIfToPromt(text) {
     });
   }
 
+  /**
+  *Metod för att att skapa reminder div:en som ska promptas en gång om dagen under split 2, tas bort efter 15 sekunder. 
+   */
   setTextInReminderPrompts(text) {
     const newReminderDiv = document.createElement("div");
     newReminderDiv.innerHTML = text;
     newReminderDiv.id="reminderPrompt";
-
-    // Lägg till den nya div:en i containern
     this.divContainer.appendChild(newReminderDiv);
 
     // Ta bort div:en efter 15 sekunder
@@ -590,7 +611,7 @@ controlIfToPromt(text) {
       setTimeout(() => {
         newReminderDiv.remove();
       }, 5000);
-    }, 15000);
+    }, 12000);
   }
 }
 
