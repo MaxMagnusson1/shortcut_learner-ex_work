@@ -16,7 +16,7 @@ class ShortcommandDiv {
     this.setupPasteListener(); 
     this.setupCutListener();
     this.divContainer = null; 
-    this.isPromptVisible = false; 
+    this.isMarkingTextPromptVisible = false; 
     this.isCtrlShiftPressed = false;
     this.ctrlAltEvent();
     this.setupPopStateListener();
@@ -143,13 +143,14 @@ setTextInDiv(text) {
      */
     document.addEventListener("selectionchange", () => {
         clearTimeout(timeoutId);
-
         timeoutId = setTimeout(() => {
           let message = "";
-
+          
           if(!isCtrlAPressed){
 
-            if (!this.isPromptVisible) {
+            if (!this.isMarkingTextPromptVisible) {
+                this.isMarkingTextPromptVisible = true;
+         
                 const selection = window.getSelection();
                 if (!selection || selection.rangeCount === 0) return;
 
@@ -174,9 +175,11 @@ setTextInDiv(text) {
                     message = "Trippelklicka för en paragraf.";
                 }
 
-                this.isPromptVisible = true;
                 this.sendToStorage(message);
                 this.controlIfToPromt(message);
+            }
+            else {
+                this.isMarkingTextPromptVisible = false;
             }
         }
         }, 300);
@@ -334,7 +337,6 @@ let shortcommandForJson = "";
 
 window.addEventListener("pageshow", (event) => {
   
-console.log(event); 
   if (event.persisted && !this.altArrowPressed) {
     chrome.runtime.sendMessage({
       action: 'alt_prompts_visable'
@@ -396,7 +398,7 @@ console.log(event);
 
             case "CTRL + D":
               this.isCtrlDPressed = true;
-              shortcommand = `${this.platformCommand} + D - Bokmärke`;
+              shortcommand = `${this.platformCommand} + D - Bokmärk`;
               shortcommandForJson = "CTRL/CMD + D";
               break;
 
@@ -447,6 +449,7 @@ console.log(event);
                     break;
                 case "d":
                     shortcommandForJson = "Shortcut: CTRL/CMD + D"; 
+                    console.log("HE"); 
                     chrome.runtime.sendMessage({
                       action: 'ctrl_d_pressed'
                   });
@@ -522,6 +525,7 @@ console.log(event);
         if (ctrlOrCmd && event.shiftKey && event.key.toLowerCase() === "i") {
           this.isCtrlShiftPressed = true; 
           shortcommandForJson = "Shortcut: CTRL/CMD + SHIFT + I"; 
+    
       }      
         if (shortcommandForJson) {
             this.sendToStorageForKeyboard(shortcommandForJson);

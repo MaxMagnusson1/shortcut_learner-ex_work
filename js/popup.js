@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
     /**
      * Dateobj för start- och sluttid för att visa knappen samt prompts
      */
-    let startTime = new Date("2025-03-11T08:00:00").getTime(); 
-    let endTime = new Date("2026-03-12T12:00:00").getTime(); 
+    let startTime = new Date("2025-03-19T15:13:00").getTime(); 
+    let endTime = new Date("2025-03-19T15:15:00").getTime(); 
 
     /**
      * Timer element som räknar ner tiden till att knappen visas 

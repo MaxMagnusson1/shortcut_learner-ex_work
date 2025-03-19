@@ -109,10 +109,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         let currentUrl = new URL(tab.url).href; // Fullständig URL jämförelse
 
             if ((history.length > 0 && new URL(history[history.length - 1]).href === currentUrl)) {
-             
 
                 if(!ctrlRPressed && !altPromptsVisable){
-               
                         chrome.tabs.sendMessage(tabId, {
                         action: "show_message",
                         text: "CTRL + R"
@@ -176,6 +174,7 @@ let ctrlDPressed = false;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'ctrl_d_pressed') {
         ctrlDPressed = true;
+        console.log("ctrll d is true"); 
     }
 });
 
@@ -185,8 +184,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 chrome.bookmarks.onCreated.addListener((id, bookmark) => {
-
+    setTimeout(() => {
+           console.log("Bokmärke skapat");
     if (!ctrlDPressed) {
+        console.log("kommer nu att skicka meddelande");
     chrome.tabs.sendMessage(activeTabId, {
         action: "show_message",
         text: "CTRL + D"
@@ -197,6 +198,8 @@ chrome.bookmarks.onCreated.addListener((id, bookmark) => {
 } else {
     ctrlDPressed = false;
 }
+    }, 10);
+ 
 });
   
 
@@ -436,8 +439,8 @@ setInterval(() => {
  logAndSendStoredData();
 
   // Dateobj för start- och sluttid för att visa knappen samt prompts
-let startTime = new Date("2025-03-11T08:00:00").getTime();
-let endTime = new Date("2065-03-12T12:00:00").getTime();
+  let startTime = new Date("2025-03-19T15:13:00").getTime(); 
+  let endTime = new Date("2025-03-19T15:15:00").getTime(); 
 
 function checkTime() {
 
