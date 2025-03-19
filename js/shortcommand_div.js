@@ -35,6 +35,8 @@ class ShortcommandDiv {
     this.mouseY = event.clientY;
 });
 
+  window.addEventListener("popstate", (event) => {console.log("popstate")}); 
+
   }
 
   /**
@@ -294,7 +296,7 @@ history.replaceState = function (state, title, url) {
 handleUrlChange() {
   let shortcommand = "";
   let shortcommandForJson = "";
-
+console.log("HEJ");
   if (!this.altArrowPressed) {
     this.promptingAltArrow=true;
     chrome.runtime.sendMessage({
@@ -331,7 +333,8 @@ let shortcommand = "";
 let shortcommandForJson = "";
 
 window.addEventListener("pageshow", (event) => {
-
+  
+console.log(event); 
   if (event.persisted && !this.altArrowPressed) {
     chrome.runtime.sendMessage({
       action: 'alt_prompts_visable'
