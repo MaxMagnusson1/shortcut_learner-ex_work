@@ -35,7 +35,6 @@ class ShortcommandDiv {
     this.mouseY = event.clientY;
 });
 
-  window.addEventListener("popstate", (event) => {console.log("popstate")}); 
 
   }
 
@@ -299,7 +298,6 @@ history.replaceState = function (state, title, url) {
 handleUrlChange() {
   let shortcommand = "";
   let shortcommandForJson = "";
-console.log("HEJ");
   if (!this.altArrowPressed) {
     this.promptingAltArrow=true;
     chrome.runtime.sendMessage({
@@ -449,7 +447,6 @@ window.addEventListener("pageshow", (event) => {
                     break;
                 case "d":
                     shortcommandForJson = "Shortcut: CTRL/CMD + D"; 
-                    console.log("HE"); 
                     chrome.runtime.sendMessage({
                       action: 'ctrl_d_pressed'
                   });

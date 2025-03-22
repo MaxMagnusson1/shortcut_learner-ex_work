@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
      * Dateobj för start- och sluttid för att visa knappen samt prompts
      */
     let startTime = new Date("2025-03-19T15:13:00").getTime(); 
-    let endTime = new Date("2025-03-19T15:15:00").getTime(); 
+    let endTime = new Date("2025-03-25T15:15:00").getTime(); 
 
     /**
      * Timer element som räknar ner tiden till att knappen visas 
@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let now = new Date().getTime();
         let timeLeft = startTime - now;
-        console.log(timeLeft);
         if (timeLeft > 0) {
             let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
             let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

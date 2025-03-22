@@ -120,7 +120,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                     return; 
                         } else {  
                             ctrlRPressed = false;
-                            // console.log("mega");
                             return; 
                         }
                     }
@@ -174,7 +173,6 @@ let ctrlDPressed = false;
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'ctrl_d_pressed') {
         ctrlDPressed = true;
-        console.log("ctrll d is true"); 
     }
 });
 
@@ -185,9 +183,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.bookmarks.onCreated.addListener((id, bookmark) => {
     setTimeout(() => {
-           console.log("Bokmärke skapat");
     if (!ctrlDPressed) {
-        console.log("kommer nu att skicka meddelande");
     chrome.tabs.sendMessage(activeTabId, {
         action: "show_message",
         text: "CTRL + D"
@@ -440,7 +436,7 @@ setInterval(() => {
 
   // Dateobj för start- och sluttid för att visa knappen samt prompts
   let startTime = new Date("2025-03-19T15:13:00").getTime(); 
-  let endTime = new Date("2025-03-19T15:15:00").getTime(); 
+  let endTime = new Date("2025-03-25T15:15:00").getTime(); 
 
 function checkTime() {
 
